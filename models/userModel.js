@@ -1,44 +1,36 @@
 const mongoose = require('mongoose');
-const User = require('../models/userModel');
-const asyncHandler = require('express-async-handler');
+const bcrypt = require('bcrypt');
 
-const Signup = asyncHandler(async(req, res)=>{
+const userSchema = new mongoose.Schema({
 
-	const {username, password, usertype} = req.body;
+    firstname:{
+        type: String,
+        required: true
+    },
+    lastname:{type: String, required:true},
+    email: {type: String, required: true, unique: true, trim: true},
+    mobile: {type:Number, required:true,  unique: true, trim: true},
+    occupation: {type: String, required: true},
+    org:{type: mongoose.Schema.Types.ObjectId, ref: "doc"},
+    isBlocked:{type:Boolean},
+    password: {type:String},
+    refreshToken:{type:String},
+    role: {type: String,
+          default: 'user' }
 
-	try{
-        const detailsx = await User.create({username: username, password: password, usertype: usertype});
-            
-	}catch(error){
+}, {timestamps: true});
 
-	}
-	
+userSchema.pre('save', async function(next){
+    if(!this.isModified("password")){
+        next();
+    }
+    const salt = await bcrypt.genSaltSync(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
 });
-const Signin = asyncHandler(async(req, res)=>{
-	 const {password, username} = req.body;
-
-	 try{
-
-	 	const login = await User.findOne({username: username});
-
-	 	if(login){
-	 		const details = await User.findOne({username: username, password: password});
-	 		if (details) {
-	 			res.json(details);
-	 		} else {
-	 			res.json({message: "Wrong details"});
-	 		}
-        }else{
-        	res.json({message: "Wrong details"});
-        }
-
-	 }catch(e){
-	 	
-	 }
-})
-const Forgetpassword = asyncHandler(async(req, res)=>{
-    
-})
+userSchema.methods.isPasswordMatched = async function(enteredPassword){
+    return await bcrypt.compare(enteredPassword, this.password);
+}
 
 
-module.exports = {Signup};
+module.exports = mongoose.model('User', userSchema);
