@@ -1,103 +1,21 @@
 const User = require('../models/userModel');
-const Org = require('../models/orgModel');
+const Patient = require('../models/patientModel');
+
 const asyncHandler = require('express-async-handler');
 const jwt = require("jsonwebtoken");
 const { generateToken } = require('../config/jwtToken');
 const {validateMongodbId} = require('../utils/validateMongoId');
 const  {generateRefreshToken} = require('../config/refreshToken');
-const Animal = require('../models/animalModel');
-
-const Payment = require('../models/paidModel');
 
 
-const addcode = asyncHandler(async(req, res)=>{
-    const {code, fullname, duration} = req.body;
-
-    try{
-
-         const addnew = await Payment.create({
-                code: code,
-                fullname: fullname,
-                duration: duration
-            })
-        if(addnew){
-
-            res.json(addnew);
-
-        }else{
-
-            res.json({error: 'Saved Unsuccessfull..try again'});
-
-        }
-
-    }catch(e){
-        throw new Error(e);
-    }
-})
-
-const addpay = asyncHandler(async(code, fullname, duration)=>{
-       try{
-
-        const addnew = await Payment.create({
-                code: code,
-                fullname: fullname,
-                duration: duration
-            })
-        if(addnew){
-            return addnew;
-        }else{
-            return {dataone: "datanotsaved"};
-        }
-        
-       }catch(e){
-        return e;
-       }
-})
-const checkcode = asyncHandler(async(req, res)=>{
-    const {thecode, chipnum} = req.body;
-
-    try{
-
-        const mydata = await Payment.findOne({code: thecode});
-
-        if(mydata){
-
-
-         const getanimal = await Animal.findOne({animal_chip: chipnum});
-         
-          if(getanimal){
-
-            res.json(getanimal);
-
-          }else{
-
-            res.json({sms:'animal not found'});
-
-          }
-
-          
-
-        }else{
-            res.json({notfound: 'not found'});
-        }
-
-    }catch(e){
-        throw new Error(e);
-    }
-})
-
-const registerSuperuser = asyncHandler(async(req, res)=>{
+const registeruser = asyncHandler(async(req, res)=>{
   
-    const {firstname, lastname, 
-        email, mobile, occupation, 
-        password, role} = req.body;
+    const {email, password, role} = req.body;
 
         try {
 
-            superuser = await User.create({firstname, lastname, 
-                email, mobile, occupation, 
-                password, role});
-            res.json(superuser);
+            superuser = await User.create(req.body);
+            res.json(superuser).status(200);
             
         } catch (error) {
 
@@ -171,181 +89,62 @@ const logout = asyncHandler(async(req, res)=>{
     
       
    });
-  
-   const updateUser = asyncHandler(async(req, res)=>{
-        const {_id} = req.user;
-        validateMongodbId(_id);
-        try {
-          const updateuser = await User.findByIdAndUpdate(_id, {
-              firstname: req?.body?.firstname,
-              lastname: req?.body?.lastname,
-              email: req?.body?.email,
-              mobile: req?.body?.mobile,
-              occupation: req?.body.occupation
-          }, {
-            new: true
-          });
-          res.json(updateuser);
-        } catch (error) {
-  
-          throw new Error(error);
-          
-        }
-   });
- const updatePassword = asyncHandler(async(req, res)=>{
-    const {_id} = req.user;
-    const {password} = req.body;
-    validateMongodbId(_id);
-    const user = await User.findById(_id);
-    if(password){
-      user.password = password;
-      const updatedpassword = await user.save();
-      res.json(updatedpassword);
-    }else{
-      res.json(user);
-    }
-});
 
-const forgotpassword = asyncHandler(async(req, res)=>{
+const addpatient = asyncHandler(async(req, res)=>{
 
-});
-const createpassword = asyncHandler(async(req,res)=>{
+})
 
-});
-const addUser = asyncHandler(async(req, res)=>{
+const addgiver = asyncHandler(async(req, res)=>{
 
-    
-    const {firstname, lastname, 
-        email, mobile, occupation, 
-        password, org} = req.body;
-       
-        try {
+})
+const editpatient = asyncHandler(async(req, res)=>{
 
-          const  adduser = await User.create({firstname, lastname, 
-                email, mobile, occupation, 
-                password});
-          const addtoorg = await Org.findByIdAndUpdate(org, {
-            $push:{org_users:adduser._id.toString()}
-          },{new:true});
+})
+const editgiver = asyncHandler(async(req, res)=>{
 
-            res.json(addtoorg);
-            
-        } catch (error) {
+})
+const getgiver = asyncHandler(async(req, res)=>{
 
-            throw new Error(error);
-            
-        }
+})
+const getpatient = asyncHandler(async(req, res)=>{
 
+})
 
-});
+const allpatient = asyncHandler(async(req, res)=>{
 
+})
+const addapp = asyncHandler(async(req, res)=>{
 
-const getaUser = asyncHandler(async(req, res)=>{
-    const {id} = req.params;
-    validateMongodbId(id);
-    try {
-       const getuser = await User.findById(id);
-       res.json({
-           getuser
-       })
-       
-    } catch (error) {
-       throw new Error(error);
-       
-    }
-});
-const profileUser = asyncHandler(async(req, res)=>{
-   const{refreshToken} = req.cookies;
-console.log(refreshToken);
-    
-  try{
-    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-   console.log(decoded);
-   const findone = await User.findById(decoded.id);
-console.log(findone);
-  if(findone.role == 'user'){
-    
-   const user = await User.findById(decoded.id).populate("org");
-    
-   res.json(user);
-      
-    }else{
-    
-    res.json(findone);
+})
+const patientapps = asyncHandler(async(req, res)=>{
 
-  }
-    
-}catch(error){
-throw new Error(error);
-}
-  
-}); 
+})
+const patientappx = asyncHandler(async(req, res)=>{
 
-const deleteaUser = asyncHandler(async(req, res)=>{
-   const {id} = req.params;
-   validateMongodbId(id);
-   try {
-      const deleteuser = await User.findByIdAndDelete(id);
-      res.json({
-          deleteuser
-      })
-      
-   } catch (error) {
-      throw new Error(error);
-      
-   }
-});
+})
+const editpatientapp = asyncHandler(async(req, res)=>{
 
-const blockUser = asyncHandler(async(req, res)=>{
+})
 
- const {id} = req.params;
- validateMongodbId(id);
- try {
-   const block = await User.findByIdAndUpdate(id, {
-     isBlocked: true,
-   },{
-     new: true
-   });
-   res.json({message:"User Blocked"});
- } catch (error) {
-   throw new Error(error);
-   
- }
+const addpay = asyncHandler(async(req, res)=>{
 
-});
+})
 
-const unblockUser = asyncHandler(async(req, res)=>{
+const getpay = asyncHandler(async(req, res)=>{
 
- const {id} = req.params;
- validateMongodbId(id);
- try {
-   const unblock = await User.findByIdAndUpdate(id, {
-     isBlocked: false,
-   },{
-     new: true
-   });
-   res.json({message:"User unBlocked"});
-   
- } catch (error) {
-   throw new Error(error);
-   
- }
- 
-});
-const getallUser = asyncHandler(async(req, res)=>{
-    try {
+})
+const patientpays = asyncHandler(async(req, res)=>{
 
-      const getUsers = await User.find();
-      res.json(getUsers);  
-        
-    } catch (error) {
-      
-        throw new Error(error);
-    }
- });
+})
+const makepay = asyncHandler(async(req, res)=>{
 
+})
+const allpays = asyncHandler(async(req, res)=>{
+
+})
   
 
 
-module.exports = {registerSuperuser, loginUser, forgotpassword, createpassword, addUser, addcode, checkcode, 
-                 updateUser, logout, updatePassword, getaUser, deleteaUser, blockUser, unblockUser, getallUser, profileUser};
+module.exports = {registeruser, loginUser, profileUser, logout, addpatient, addgiver, editpatient, 
+                 editgiver, getpatient, getgiver, allpatient, addapp, patientapps, patientappx, editpatientapp,
+                  addpay, getpay, patientpays, makepay, allpays};
