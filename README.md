@@ -1,1 +1,0 @@
-Kgato Clinic
