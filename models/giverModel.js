@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const userSchema = new mongoose.Schema({
+const giverSchema = new mongoose.Schema({
 
-   Firstname: {type: String}, Lastname: {type: String},
+   Firstname: {type: String}, 
+   Lastname: {type: String},
    DOB: {type: String}, 
     Gender: {type: String}, 
     email: {type: String}, 
@@ -23,4 +24,4 @@ const userSchema = new mongoose.Schema({
 
 
 
-module.exports = mongoose.model('Giver', userSchema);
+module.exports = mongoose.model('Giverman', giverSchema);

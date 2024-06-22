@@ -7,7 +7,7 @@ const dotenv = require('dotenv').config();
 const PORT = process.env.PORT || 5000;
 
 
-const router = require('./routes/Authroutes');
+const router = require('./routes/routes');
 
 
 const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
@@ -24,7 +24,7 @@ app.use(cookieParser());
 app.use(cors({
  
  credentials: true,
- origin: "http://localhost:3000/"
+ origin: " http://localhost:5173"
 
 }));
 

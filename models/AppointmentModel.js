@@ -3,8 +3,8 @@ const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
 
-   patient_id: {type: mongoose.Schema.Types.ObjectId, ref: "Patient"}
-   date_by: {type: String}, 
+   patient_id: {type: mongoose.Schema.Types.ObjectId, ref: "Patient"},
+   onthe: {type: String}, 
    from_on: {type: String},
    to_on: {type: String}
 
@@ -13,4 +13,4 @@ const userSchema = new mongoose.Schema({
 
 
 
-module.exports = mongoose.model('Giver', userSchema);
+module.exports = mongoose.model('Appointment', userSchema);

@@ -1,17 +1,18 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const userSchema = new mongoose.Schema({
+const patientSchema = new mongoose.Schema({
 
    Firstname: {type: String}, 
    Lastname: {type: String},
     DOB: {type: String}, Gender: {type: String}, 
     dateJoined: {type: String},
-    Giver_relation: {type: mongoose.Schema.Types.ObjectId, ref: "Giver"},
+    Giver_relation: {type: mongoose.Schema.Types.ObjectId, ref: "Giverman"},
+    relationship: {type: String},
     appointments:[{type: mongoose.Schema.Types.ObjectId, ref: "Appointment"}]
 
 }, {timestamps: true});
 
 
 
-module.exports = mongoose.model('Patient', userSchema);
+module.exports = mongoose.model('Patient', patientSchema);

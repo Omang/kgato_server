@@ -1,6 +1,6 @@
 const User = require('../models/userModel');
 const Patient = require('../models/patientModel');
-const Giver = require('../models/giverModel');
+const Giverman = require('../models/giverModel');
 const asyncHandler = require('express-async-handler');
 const jwt = require("jsonwebtoken");
 const { generateToken } = require('../config/jwtToken');
@@ -92,10 +92,25 @@ const logout = asyncHandler(async(req, res)=>{
    });
 
 const addpatient = asyncHandler(async(req, res)=>{
+      console.log(req.body);
+     const {
+  Firstname,
+  Lastname,
+  DOB,
+  Gender,
+  dateJoined,
+  Giver_relation
+} = req.body
 
         try{
 
-          const savedata = await Patient.create(req.body);
+          const savedata = await Patient.create({
+            Firstname: Firstname,
+  Lastname: Lastname,
+  DOB: DOB,
+  Gender: Gender,
+  dateJoined:dateJoined
+          });
 
           if (savedata) {
             res.json(savedata).status(200);
@@ -113,7 +128,7 @@ const addgivertopatient = asyncHandler(async(req, res)=>{
   const {patient_id, giver_id} = req.body;
   try{
 
-    const addto = await Giver.findByIdAndUpdate(giver_id, {
+    const addto = await Giverman.findByIdAndUpdate(giver_id, {
         $push:{
           patients: patient_id
         }  
@@ -134,26 +149,33 @@ const addgivertopatient = asyncHandler(async(req, res)=>{
 
 const addgiver = asyncHandler(async(req, res)=>{
       const {
-        patient_id, Firstname, Lastname, DOB, Gender, email, cellphone, worknumber, homenumber,
+        childid, Firstname, Lastname, DOB, Gender, email, cellphone, worknumber, homenumber,
         nationality, occupation, employer, plotnumber, ward, place, postaladd, med_id, med_number,
-        dateJoined, contribution, allergies, aboutus
+        dateJoined, contribution, allergies, aboutus, relationship
       } = req.body;
   try{
 
-    const savedata = await Giver.create({
+    const savedata = await Giverman.create({
         Firstname: Firstname, Lastname:Lastname, DOB:DOB, Gender: Gender, 
         email: email, cellphone: cellphone, worknumber: worknumber, homenumber: homenumber,
         nationality: nationality, occupation: occupation, 
         employer: employer, plotnumber: plotnumber, ward: ward, 
         place: place, postaladd: postaladd, med_id: med_id, med_number: med_number,
         dateJoined: dateJoined, contribution: contribution, allergies: allergies, aboutus: aboutus,
-        patients:[patient_id]
+        patients:[childid]
       });
 
     if (savedata) {
+      const addtochild = await Patient.findByIdAndUpdate(childid, {
+        
+          Giver_relation: childid,
+        relationship: relationship
+      })
+
       res.json(savedata).status(200);
+
     } else {
-      res.json({message: "not saved"})
+      res.json({message: "not saved"});
     }
 
   }catch(e){
@@ -192,7 +214,7 @@ const editgiver = asyncHandler(async(req, res)=>{
 
   try{
 
-    const editone = await Patient.findByIdAndUpdate(giver_id, {
+    const editone = await Giverman.findByIdAndUpdate(giver_id, {
         Firstname: Firstname, Lastname:Lastname, DOB:DOB, Gender: Gender, 
         email: email, cellphone: cellphone, worknumber: worknumber, homenumber: homenumber,
         nationality: nationality, occupation: occupation, 
@@ -216,7 +238,7 @@ const getgiver = asyncHandler(async(req, res)=>{
   const {id} = req.params;
 
   try{
-   const getone = await Giver.findById(id).populate("patients");
+   const getone = await Giverman.findById(id).populate("patients");
    if(getone){
     res.json(getone).status(200);
    }else{
@@ -262,7 +284,7 @@ const allpatient = asyncHandler(async(req, res)=>{
 })
 const addapp = asyncHandler(async(req, res)=>{
 
-  const {patient_id, date_by, from_on, to_on} = req.body;
+  const {patient_id, onthe, from_on, to_on} = req.body;
   try{
 
     const {_id} = await Appointment.create(req.body);
@@ -274,7 +296,7 @@ const addapp = asyncHandler(async(req, res)=>{
         }
       });
 
-        res.json({_id, date_by, from_on, to_on}).status(200);
+        res.json({_id, onthe, from_on, to_on}).status(200);
 
     }else{
       res.json({message: "Not Saved"}).status(500);
@@ -323,12 +345,12 @@ const patientappx = asyncHandler(async(req, res)=>{
 
 })
 const editpatientapp = asyncHandler(async(req, res)=>{
-  const {app_id, date_by, from_on, to_on} = req.body;
+  const {app_id, onthe, from_on, to_on} = req.body;
 
   try{
 
     const editone = await Appointment.findByIdAndUpdate(app_id,{
-      date_by: date_by, from_on: from_on, to_on: to_on
+      onthe: onthe, from_on: from_on, to_on: to_on
     });
     if (editone) {
       res.json(editone).status(200);
@@ -363,6 +385,6 @@ const allpays = asyncHandler(async(req, res)=>{
   
 
 
-module.exports = {registeruser, loginUser, profileUser, logout, addpatient, addgiver, editpatient, 
+module.exports = {registeruser, loginUser, logout, addpatient, addgiver, editpatient, 
                  editgiver, getpatient, getgiver, allpatient, addapp, patientapps, patientappx, editpatientapp,
                   addpay, getpay, patientpays, makepay, allpays};
