@@ -24,7 +24,7 @@ app.use(cookieParser());
 app.use(cors({
  
  credentials: true,
- origin: "https://kgato-client.onrender.com"
+ origin: "https://501d-41-77-88-14.ngrok-free.app"
 
 }));
 

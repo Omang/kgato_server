@@ -4,7 +4,7 @@ const { authMiddleware, isAdmin } = require('../middlewares/authMiddleware');
 
 const {registeruser, loginUser, logout, addpatient, addgiver, editpatient, 
                  editgiver, getpatient, getgiver, allpatient, addapp, patientapps, patientappx, editpatientapp,
-                  addpay, getpay, patientpays, makepay, allpays} = require('../controllers/authController');
+                  addpay, getpay, patientpays, makepay, allpays, allapps, patientGiver} = require('../controllers/authController');
 
 
 router.post('/register', registeruser);
@@ -18,8 +18,10 @@ router.get('/getgiver/:id', getgiver);
 router.post('/allpatient', allpatient);
 router.post('/addapp', addapp);
 router.get('/patientapps/:id', patientapps);
+router.get('/patientgiver/:id', patientGiver);
 router.post('/logout', logout);
 router.put('/editpatientapp', editpatientapp);
+router.post('/allapps', allapps);
 
 
 module.exports = router;

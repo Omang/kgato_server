@@ -309,11 +309,11 @@ const addapp = asyncHandler(async(req, res)=>{
 })
 const patientapps = asyncHandler(async(req, res)=>{
 
-  const {patient_id} = req.params;
+  const {id} = req.params;
 
   try{
 
-    const getone = await Appointment.find({patient_id:patient_id});
+    const getone = await Appointment.find({patient_id:id});
     if (getone) {
       res.json(getone).status(200);
     } else {
@@ -364,6 +364,42 @@ const editpatientapp = asyncHandler(async(req, res)=>{
 
 })
 
+const allapps = asyncHandler(async(req, res)=>{
+
+  try{
+
+    const getall = await Appointment.find().populate("patient_id");
+    if (getall) {
+      res.json(getall).status(200);
+    } else {
+      res.json({error: "nothing"}).status(500);
+    }
+
+  }catch(e){
+    throw new Error(e);
+  }
+
+});
+
+const patientGiver = asyncHandler(async(req, res)=>{
+  const {id} = req.params;
+  try{
+
+    const addone = await Giverman.find({
+      patients: { "$in" : [id]}
+    })
+    if (addone) {
+      console.log(addone);
+      res.json(addone);
+    } else {
+      res.json({error: "something went wrong"})
+    }
+
+  }catch(e){
+    throw new Error(e);
+  }
+})
+
 const addpay = asyncHandler(async(req, res)=>{
 
 
@@ -387,4 +423,4 @@ const allpays = asyncHandler(async(req, res)=>{
 
 module.exports = {registeruser, loginUser, logout, addpatient, addgiver, editpatient, 
                  editgiver, getpatient, getgiver, allpatient, addapp, patientapps, patientappx, editpatientapp,
-                  addpay, getpay, patientpays, makepay, allpays};
+                  addpay, getpay, patientpays, makepay, allpays, allapps, patientGiver};
